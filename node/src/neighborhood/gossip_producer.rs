@@ -102,9 +102,9 @@ impl GossipProducerReal {
 mod tests {
     use super::super::gossip::GossipNodeRecord;
     use super::*;
+    use crate::neighborhood::gossip::AccessibleGossipRecord;
     use crate::neighborhood::neighborhood_database::ISOLATED_NODE_GRACE_PERIOD_SECS;
     use crate::neighborhood::node_record::{NodeRecord, NodeRecordInner_0v1};
-    use crate::neighborhood::AccessibleGossipRecord;
     use crate::sub_lib::cryptde::CryptDE;
     use crate::sub_lib::cryptde_null::CryptDENull;
     use crate::sub_lib::utils::time_t_timestamp;
@@ -336,7 +336,8 @@ mod tests {
 
     #[test]
     fn produce_debut_creates_a_gossip_to_a_target_about_ourselves_when_accepting_connections() {
-        let our_node_record: NodeRecord = make_node_record(7771, true);
+        let mut our_node_record: NodeRecord = make_node_record(7771, true);
+        our_node_record.inner.country_code_opt = None;
         let db = db_from_node(&our_node_record);
         let subject = GossipProducerReal::new();
 
@@ -374,6 +375,7 @@ mod tests {
         let result_gossip_record = result_gossip.node_records.first().unwrap();
         assert_eq!(result_gossip_record.node_addr_opt, None);
         let result_node_record_inner = NodeRecordInner_0v1::try_from(result_gossip_record).unwrap();
+        our_node_record.inner.country_code_opt = None;
         assert_eq!(result_node_record_inner, our_node_record.inner);
         let our_cryptde = CryptDENull::from(our_node_record.public_key(), TEST_DEFAULT_CHAIN);
         assert_eq!(
