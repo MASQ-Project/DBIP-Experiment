@@ -39,7 +39,7 @@ jobs:
         if: ${{ env.SKIP_EXPORT == 'false' }}
         run: |
           set -xv
-          echo TEMP_DIR="$(mktemp -d)" >> $GITHUB_ENV
+          echo "TEMP_DIR=$(mktemp -d)" >> $GITHUB_ENV
           echo $TEMP_DIR
           pwd
           cd ip_country
