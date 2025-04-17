@@ -45,6 +45,7 @@ jobs:
           cd ip_country
           mkdir -p generated
           cargo run < "dbip-data/dbip-country-lite.mmdb" > "$TEMP_DIR"/dbip_country.rs
+          ls "$TEMP_DIR"
           if [ "$?" -ne "0" ]; then 
             echo "SKIP_EXPORT=true" >> $GITHUB_ENV 
           fi
@@ -52,6 +53,7 @@ jobs:
       - name: Commit and push generated file
         if: ${{ env.SKIP_EXPORT == 'false' }}
         run: |
+          set -xv
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B generated-source
