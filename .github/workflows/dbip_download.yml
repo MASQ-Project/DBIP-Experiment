@@ -40,10 +40,11 @@ jobs:
         run: |
           set -xv
           echo TEMP_DIR="$(mktemp -d)" >> $GITHUB_ENV
+          echo $TEMP_DIR
           pwd
           cd ip_country
           mkdir -p generated
-          cargo run < "dbip-data/dbip-country-lite.mmdb" > "${TEMP_DIR}"/dbip_country.rs
+          cargo run < "dbip-data/dbip-country-lite.mmdb" > "$TEMP_DIR"/dbip_country.rs
           if [ "$?" -ne "0" ]; then 
             echo "SKIP_EXPORT=true" >> $GITHUB_ENV 
           fi
