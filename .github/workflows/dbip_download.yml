@@ -37,6 +37,8 @@ jobs:
       - name: Generate Rust source file
         if: ${{ env.SKIP_EXPORT == 'false' }}
         run: |
+          pwd
+          cd ip_country
           mkdir -p generated
           cargo run < "dbip-data/dbip-country-lite.mmdb" > generated/dbip_country.rs
           if [ "$?" -ne "0" ]; then 
