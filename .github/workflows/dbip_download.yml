@@ -39,8 +39,7 @@ jobs:
         if: ${{ env.SKIP_EXPORT == 'false' }}
         run: |
           set -xv
-          TEMPDIR = $(mktemp -d);
-          echo TEMP_DIR="$TEMPDIR" >> $GITHUB_ENV
+          echo TEMP_DIR="$(mktemp -d)" >> $GITHUB_ENV
           pwd
           cd ip_country
           mkdir -p generated
