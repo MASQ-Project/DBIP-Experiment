@@ -7,7 +7,7 @@ on:
 
 env:
   SKIP_EXPORT: 'false'
-  TEMP_DIR: ''
+  TEMP_DIR: '/tmp'
 
 permissions:
   contents: write
