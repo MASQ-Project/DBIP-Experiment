@@ -60,6 +60,7 @@ jobs:
           git rm -rf .
           ls -la
           ls -la ip_country
+          mkdir ip_country/src
           mv "${TEMP_DIR}"/dbip_country.rs ip_country/src/dbip_country.rs
           git add ip_country/src/dbip_country.rs
           git commit -m "Update generated dbip_country Rust source file"
