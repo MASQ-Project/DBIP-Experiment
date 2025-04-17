@@ -43,7 +43,7 @@ jobs:
           pwd
           cd ip_country
           mkdir -p generated
-          cargo run < "dbip-data/dbip-country-lite.mmdb" > "${{ env.TEMP_DIR }}"/dbip_country.rs
+          cargo run < "dbip-data/dbip-country-lite.mmdb" > "${TEMP_DIR}"/dbip_country.rs
           if [ "$?" -ne "0" ]; then 
             echo "SKIP_EXPORT=true" >> $GITHUB_ENV 
           fi
@@ -55,7 +55,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B generated-source
           git rm -rf .
-          mv ${{ env.TEMP_DIR }}/dbip_country.rs ip_country/src/dbip_country.rs
+          mv "${TEMP_DIR}"/dbip_country.rs ip_country/src/dbip_country.rs
           git add ip_country/src/dbip_country.rs
           git commit -m "Update generated dbip_country Rust source file"
           git push origin generated-source --force
