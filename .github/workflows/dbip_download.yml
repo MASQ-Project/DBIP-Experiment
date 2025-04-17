@@ -7,6 +7,7 @@ on:
 
 env:
   SKIP_EXPORT: 'false'
+  TEMP_DIR: $(mktemp -d)
 
 permissions:
   contents: write
@@ -41,7 +42,7 @@ jobs:
           pwd
           cd ip_country
           mkdir -p generated
-          cargo run < "dbip-data/dbip-country-lite.mmdb" > generated/dbip_country.rs
+          cargo run < "dbip-data/dbip-country-lite.mmdb" > ${{ env.TEMP_DIR }}/dbip_country.rs
           if [ "$?" -ne "0" ]; then 
             echo "SKIP_EXPORT=true" >> $GITHUB_ENV 
           fi
@@ -49,11 +50,13 @@ jobs:
       - name: Commit and push generated file
         if: ${{ env.SKIP_EXPORT == 'false' }}
         run: |
-          cd ip_country
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B generated-source
-          mv generated/dbip_country.rs src/dbip_country.rs
-          git add src/dbip_country.rs
+          git rm -rf .
+          mkdir ip_country
+          mkdir ip_country/src
+          mv ${{ env.TEMP_DIR }}/dbip_country.rs ip_country/src/dbip_country.rs
+          git add ip_country/src/dbip_country.rs
           git commit -m "Update generated dbip_country Rust source file"
           git push origin generated-source --force
