@@ -63,18 +63,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Download dbip file
-        uses: actions/download-artifact@v4
-        with:
-          name: dbip_country
-
-      - name: Move and overwrite dbip file
-        shell: bash
-        run: cp -f dbip_country.rs ip_country/src/dbip_country.rs || exit 1
-  
-      - name: Show dbip file
-        run: cat ip_country/src/dbip_country.rs
-
       - name: Build ${{ matrix.target.os }}
         run: |
           ./ci/all.sh
