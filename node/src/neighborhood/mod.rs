@@ -89,7 +89,7 @@ pub const UNREACHABLE_HOST_PENALTY: i64 = 100_000_000;
 pub const UNREACHABLE_COUNTRY_PENALTY: u32 = 100_000_000;
 pub const ZERO_UNDESIRABILITY: u32 = 0;
 pub const COUNTRY_UNDESIRABILITY_FACTOR: u32 = 1_000;
-pub const RESPONSE_UNDESIRABILITY_FACTOR: usize = 1_000; // assumed response length is request * this
+pub const RESPONSE_UNDESIRABILITY_FACTOR: usize = 1_000usize; // assumed response length is request * this
 pub const ZZ_COUNTRY_CODE_STRING: &str = "ZZ";
 
 pub struct Neighborhood {
