@@ -16,7 +16,8 @@ jobs:
 
       - name: Checkout dbip file from generated-source branch
         run: |
-          git checkout generated-source -- ip_country/src/dbip_country.rs
+          git fetch
+          git checkout origin/generated-source -- ip_country/src/dbip_country.rs
   
   build:
     needs: generate-dbip
