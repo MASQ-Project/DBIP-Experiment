@@ -1,4 +1,6 @@
 
+// GENERATED CODE: REGENERATE, DO NOT MODIFY!
+
 use lazy_static::lazy_static;
 use crate::countries::Countries;
 
@@ -266,14 +268,15 @@ lazy_static! {
 pub fn ipv4_country_data() -> (Vec<u64>, usize) {
     (
         vec![
-            0x8098000300801003, 0x18081B0020981C04, 0xB428C00158440E83, 0x00076162030DC320,
+            0x80A0000300801003, 0x4C6B1912C0105106, 0x64300180165206B2, 0x4B009F1400F93DAF,
+            0x00000001BB803FE4,
         ],
-        256
+        298
     )
 }
 
 pub fn ipv4_country_block_count() -> usize {
-    6
+        8
 }
 
 pub fn ipv6_country_data() -> (Vec<u64>, usize) {
