@@ -5876,6 +5876,10 @@ mod tests {
             subject.neighborhood_database.root().inner.country_code_opt,
             Some("AU".to_string())
         );
+        assert_ne!(
+            subject.neighborhood_database.root().inner.country_code_opt,
+            Some("ZZ".to_string())
+        );
         assert_eq!(
             subject.neighborhood_database.root().inner.country_code_opt,
             Some(
