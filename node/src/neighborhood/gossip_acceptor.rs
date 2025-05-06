@@ -93,8 +93,8 @@ impl GossipHandler for DebutHandler {
         if database.node_by_key(&agrs[0].inner.public_key).is_some() {
             return Qualification::Unmatched;
         }
-        // TODO create optimization card: drive in the test and following commented out code,
-        // TODO: Imagine a brand-new network, consisting only of Node A.
+        //TODO: Create optimization card to drive in the following logic:
+        // Imagine a brand-new network, consisting only of Node A.
         // When Node B debuts, Node A cannot respond with an Introduction,
         // since there's nobody to introduce. Therefore, Node A must
         // respond with a single-Node Gossip that will currently be
@@ -1419,6 +1419,7 @@ mod tests {
     use super::*;
     use crate::neighborhood::gossip_producer::GossipProducer;
     use crate::neighborhood::gossip_producer::GossipProducerReal;
+    use crate::neighborhood::node_location::get_node_location;
     use crate::neighborhood::node_record::NodeRecord;
     use crate::neighborhood::{
         FallbackPreference, UserExitPreferences, UNREACHABLE_COUNTRY_PENALTY,
@@ -1428,8 +1429,8 @@ mod tests {
     use crate::sub_lib::utils::time_t_timestamp;
     use crate::test_utils::neighborhood_test_utils::{
         db_from_node, gossip_about_nodes_from_database, linearly_connect_nodes,
-        make_meaningless_db, make_node_record, make_node_record_f, make_node_records,
-        public_keys_from_node_records, DB_PATCH_SIZE_FOR_TEST,
+        make_meaningless_db, make_node_record, make_node_record_cc, make_node_record_f,
+        make_node_records, public_keys_from_node_records, DB_PATCH_SIZE_FOR_TEST,
     };
     use crate::test_utils::unshared_test_utils::make_cpm_recipient;
     use crate::test_utils::{assert_contains, main_cryptde, vec_to_set};
@@ -1749,24 +1750,14 @@ mod tests {
             )
             .unwrap();
 
-        let (debut_reply, dest_public_key, dest_node_addr) = match counter_debut {
-            GossipAcceptanceResult::Reply(
-                ref debut_reply,
-                ref dest_public_key,
-                ref dest_node_addr,
-            ) => (debut_reply, dest_public_key, dest_node_addr),
+        let (dest_public_key, dest_node_addr) = match counter_debut {
+            GossipAcceptanceResult::Reply(_, ref dest_public_key, ref dest_node_addr) => {
+                (dest_public_key, dest_node_addr)
+            }
             x => panic!("Expected Reply, got {:?}", x),
         };
         assert_eq!(dest_public_key, new_debutant.public_key());
         assert_eq!(dest_node_addr, &new_debutant.node_addr_opt().unwrap());
-        assert_eq!(
-            counter_debut,
-            GossipAcceptanceResult::Reply(
-                debut_reply.clone(),
-                dest_public_key.clone(),
-                dest_node_addr.clone()
-            )
-        )
     }
 
     #[test]
@@ -2084,7 +2075,7 @@ mod tests {
             fallback_preference: FallbackPreference::ExitCountryNoFallback,
             locations_opt: Some(vec![ExitLocation {
                 country_codes: vec!["FR".to_string()],
-                priority: 2,
+                priority: 1,
             }]),
             db_countries: vec!["FR".to_string()],
         });
@@ -2113,10 +2104,7 @@ mod tests {
 
         let result_introducer: &NodeRecord =
             dest_db.node_by_key(&agrs[0].inner.public_key).unwrap();
-        let mut expected_introducer = NodeRecord::from(&agrs[0]);
-        expected_introducer.metadata.last_update = result_introducer.metadata.last_update;
-        expected_introducer.metadata.country_undesirability = 0;
-        expected_introducer.resign();
+        let expected_introducer = NodeRecord::from(&agrs[0]);
         assert_eq!(result_introducer, &expected_introducer);
         assert_eq!(
             dest_db
@@ -2449,8 +2437,19 @@ mod tests {
         let src_root = make_node_record(1234, true);
         let dest_root = make_node_record(2345, true);
         let mut src_db = db_from_node(&src_root);
-        let node_a_ao = make_node_record(5678, true);
-        let node_b_ad = make_node_record(1235, true);
+        let node_a = make_node_record(5678, true);
+        let country_zero = node_a.inner.country_code_opt.clone().unwrap();
+        let mut cc = country_zero.clone();
+        let mut iterator = 1111;
+        while cc == country_zero {
+            iterator += 1111;
+            let ip = IpAddr::V4(Ipv4Addr::from(iterator));
+            cc = match get_node_location(Some(ip)) {
+                Some(nl) => nl.country_code,
+                None => cc,
+            }
+        }
+        let node_b = make_node_record_cc(iterator as u16, true, cc.as_ref());
         let mut dest_db = db_from_node(&dest_root);
         dest_db.add_node(src_root.clone()).unwrap();
         dest_db.add_arbitrary_full_neighbor(dest_root.public_key(), src_root.public_key());
@@ -2477,13 +2476,13 @@ mod tests {
         let (cpm_recipient, recording_arc) = make_cpm_recipient();
         let mut neighborhood_metadata = make_default_neighborhood_metadata();
         neighborhood_metadata.user_exit_preferences_opt = Some(UserExitPreferences {
-            exit_countries: vec!["AO".to_string()],
+            exit_countries: vec![country_zero.clone()],
             fallback_preference: FallbackPreference::ExitCountryWithFallback,
             locations_opt: Some(vec![ExitLocation {
-                country_codes: vec!["AO".to_string()],
+                country_codes: vec![country_zero.clone()],
                 priority: 1,
             }]),
-            db_countries: vec!["AO".to_string()],
+            db_countries: vec![country_zero],
         });
         neighborhood_metadata.cpm_recipient = cpm_recipient;
         let system = System::new("test");
@@ -2499,7 +2498,7 @@ mod tests {
 
         assert_eq!(
             dest_db
-                .node_by_key(node_a_ao.public_key())
+                .node_by_key(node_a.public_key())
                 .unwrap()
                 .metadata
                 .country_undesirability,
@@ -2507,7 +2506,7 @@ mod tests {
         );
         assert_eq!(
             dest_db
-                .node_by_key(node_b_ad.public_key())
+                .node_by_key(node_b.public_key())
                 .unwrap()
                 .metadata
                 .country_undesirability,

@@ -6,6 +6,9 @@ on:
     branches:
       - master
 
+env:
+  GITHUB_ACTIONS: 'true'
+
 jobs:
 #  generate-dbip:
 #    runs-on: ubuntu-latest

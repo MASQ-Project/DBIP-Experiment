@@ -295,6 +295,7 @@ impl NodeRecord {
     }
 }
 
+//TODO #479 check constructed metadata contains proper country_code
 impl From<AccessibleGossipRecord> for NodeRecord {
     fn from(agr: AccessibleGossipRecord) -> Self {
         let ip_add_opt = agr
@@ -353,7 +354,7 @@ pub struct NodeRecordMetadata {
     // Therefore, we use a value of 0 for exit nodes in countries that are not considered for exit.
     pub country_undesirability: u32,
     //TODO introduce scores for latency #582 and reliability #583
-    //TODO introduce check for node_location_opt, to verify full neighbors country code (we know his IP, so we can verify it)
+    //TODO #479 introduce check for node_location_opt, to verify full neighbors country code (we know his IP, so we can verify it)
 }
 
 impl NodeRecordMetadata {
@@ -401,6 +402,7 @@ mod tests {
         let mut expected_node_record = make_node_record(1234, true);
         expected_node_record.set_version(6);
         expected_node_record.resign();
+        let expexted_cc = expected_node_record.inner.country_code_opt.clone().unwrap();
         let mut db = db_from_node(&make_node_record(2345, true));
         db.add_node(expected_node_record.clone()).unwrap();
         let builder = GossipBuilder::new(&db).node(expected_node_record.public_key(), true);
@@ -414,10 +416,7 @@ mod tests {
             before <= actual_node_record.metadata.last_update
                 && actual_node_record.metadata.last_update <= after
         );
-        assert_eq!(
-            actual_node_record.inner.country_code_opt,
-            Some("AD".to_string())
-        );
+        assert_eq!(actual_node_record.inner.country_code_opt, Some(expexted_cc));
         expected_node_record.metadata.last_update = actual_node_record.metadata.last_update;
         assert_eq!(actual_node_record, expected_node_record);
     }
