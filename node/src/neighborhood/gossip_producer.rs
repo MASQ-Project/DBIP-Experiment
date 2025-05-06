@@ -375,7 +375,6 @@ mod tests {
         let result_gossip_record = result_gossip.node_records.first().unwrap();
         assert_eq!(result_gossip_record.node_addr_opt, None);
         let result_node_record_inner = NodeRecordInner_0v1::try_from(result_gossip_record).unwrap();
-        our_node_record.inner.country_code_opt = None;
         assert_eq!(result_node_record_inner, our_node_record.inner);
         let our_cryptde = CryptDENull::from(our_node_record.public_key(), TEST_DEFAULT_CHAIN);
         assert_eq!(

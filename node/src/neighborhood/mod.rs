@@ -2190,7 +2190,7 @@ mod tests {
     use masq_lib::test_utils::utils::{ensure_node_home_directory_exists, TEST_DEFAULT_CHAIN};
     use masq_lib::ui_gateway::MessagePath::Conversation;
     use masq_lib::ui_gateway::MessageTarget;
-    use masq_lib::ui_gateway::{MessageBody, MessagePath};
+    use masq_lib::ui_gateway::MessageBody;
     use masq_lib::utils::running_test;
 
     use crate::db_config::persistent_configuration::PersistentConfigError;
@@ -5875,24 +5875,6 @@ mod tests {
         assert_ne!(
             subject.neighborhood_database.root().inner.country_code_opt,
             Some("AU".to_string())
-        );
-        assert_eq!(
-            subject.neighborhood_database.root().inner.country_code_opt,
-            Some(
-                subject
-                    .neighborhood_database
-                    .root()
-                    .metadata
-                    .node_location_opt
-                    .as_ref()
-                    .unwrap()
-                    .country_code
-                    .clone()
-            )
-        );
-        assert_eq!(
-            subject.neighborhood_database.root().inner.country_code_opt,
-            Some("AO".to_string())
         );
         assert_eq!(
             subject.neighborhood_database.root().inner.country_code_opt,
