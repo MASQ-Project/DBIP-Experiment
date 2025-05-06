@@ -9,11 +9,8 @@ export RUST_BACKTRACE=1
 #if github checkout fails, you can download csv database from db-ip.com and convert it locally by cargo run ip_country
 if [[ "$GITHUB_ACTIONS" == "" && "$ARGV_1" != "dbip" ]]; then
   ls
-  git remote add experiment https://github.com/MASQ-Project/DBIP-Experiment.git
-  git fetch experiment
-  git checkout experiment/generated-source -- ip_country/src/dbip_country.rs
-  git remote remove experiment
-  echo "chekout $ARGV_1"
+  git checkout origin/generated-source -- ip_country/src/dbip_country.rs
+  ls
 fi
 # Remove these two lines to slow down the build
 which sccache || cargo install --version 0.4.1 sccache || echo "Skipping sccache installation"  # Should do significant work only once

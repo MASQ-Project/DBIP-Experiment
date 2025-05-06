@@ -2454,11 +2454,11 @@ mod tests {
         dest_db.add_node(src_root.clone()).unwrap();
         dest_db.add_arbitrary_full_neighbor(dest_root.public_key(), src_root.public_key());
         src_db.add_node(dest_db.root().clone()).unwrap();
-        src_db.add_node(node_a.clone()).unwrap();
-        src_db.add_node(node_b.clone()).unwrap();
+        src_db.add_node(node_a_ao.clone()).unwrap();
+        src_db.add_node(node_b_ad.clone()).unwrap();
         src_db.add_arbitrary_full_neighbor(src_root.public_key(), dest_root.public_key());
-        src_db.add_arbitrary_half_neighbor(src_root.public_key(), &node_a.public_key());
-        src_db.add_arbitrary_full_neighbor(src_root.public_key(), &node_b.public_key());
+        src_db.add_arbitrary_half_neighbor(src_root.public_key(), &node_a_ao.public_key());
+        src_db.add_arbitrary_full_neighbor(src_root.public_key(), &node_b_ad.public_key());
         src_db
             .node_by_key_mut(src_root.public_key())
             .unwrap()
@@ -2466,8 +2466,8 @@ mod tests {
         src_db.resign_node(src_root.public_key());
         let gossip = GossipBuilder::new(&src_db)
             .node(src_root.public_key(), true)
-            .node(node_a.public_key(), false)
-            .node(node_b.public_key(), false)
+            .node(node_a_ao.public_key(), false)
+            .node(node_b_ad.public_key(), false)
             .build();
         let subject = StandardGossipHandler::new(Logger::new("test"));
         let cryptde = CryptDENull::from(dest_db.root().public_key(), TEST_DEFAULT_CHAIN);
@@ -2520,12 +2520,12 @@ mod tests {
         );
         assert!(dest_db.has_full_neighbor(dest_db.root().public_key(), src_db.root().public_key()));
         assert_eq!(
-            &src_db.node_by_key(node_a.public_key()).unwrap().inner,
-            &dest_db.node_by_key(node_a.public_key()).unwrap().inner
+            &src_db.node_by_key(node_a_ao.public_key()).unwrap().inner,
+            &dest_db.node_by_key(node_a_ao.public_key()).unwrap().inner
         );
         assert_eq!(
-            &src_db.node_by_key(node_b.public_key()).unwrap().inner,
-            &dest_db.node_by_key(node_b.public_key()).unwrap().inner
+            &src_db.node_by_key(node_b_ad.public_key()).unwrap().inner,
+            &dest_db.node_by_key(node_b_ad.public_key()).unwrap().inner
         );
         System::current().stop();
         assert_eq!(system.run(), 0);

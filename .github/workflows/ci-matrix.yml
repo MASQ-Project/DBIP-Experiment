@@ -10,7 +10,20 @@ env:
   GITHUB_ACTIONS: 'true'
 
 jobs:
+#  generate-dbip:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          ref: ${{ github.event.pull_request.head.sha }}
+#
+#      - name: Checkout dbip file from generated-source branch
+#        run: |
+#          git fetch
+#          git checkout origin/generated-source -- ip_country/src/dbip_country.rs
+#
   build:
+#    needs: generate-dbip
     if: github.event.pull_request.draft == false
     strategy:
       fail-fast: true
@@ -55,10 +68,9 @@ jobs:
 
       - name: Build ${{ matrix.target.os }}
         run: |
-          git remote add experiment https://github.com/MASQ-Project/DBIP-Experiment.git
-          git fetch experiment
-          git checkout experiment/generated-source -- ip_country/src/dbip_country.rs
-          git remote remove experiment
+          git fetch
+          git checkout origin/generated-source -- ip_country/src/dbip_country.rs
+          ls -la ip_country/src/dbip_country.rs
           ./ci/all.sh
           ./ci/multinode_integration_test.sh
           ./ci/collect_results.sh
