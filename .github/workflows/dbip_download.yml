@@ -57,6 +57,7 @@ jobs:
           else
                git checkout generated-source
           fi
+          diff "${TEMP_DIR}"/dbip_country.rs ip_country/src/dbip_country.rs
           mv "${TEMP_DIR}"/dbip_country.rs ip_country/src/dbip_country.rs
           git add ip_country/src/dbip_country.rs
           git commit -m "Update generated dbip_country ${YEAR_MONTH} Rust source file" || true
