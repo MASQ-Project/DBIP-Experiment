@@ -57,7 +57,6 @@ jobs:
           else
                git checkout generated-source
           fi
-          echo "struct TestStr {}" >> "${TEMP_DIR}"/dbip_country.rs
           DIFF="$(diff "${TEMP_DIR}"/dbip_country.rs ip_country/src/dbip_country.rs || true)"
           if [[ "$DIFF" != "" ]]
           then
